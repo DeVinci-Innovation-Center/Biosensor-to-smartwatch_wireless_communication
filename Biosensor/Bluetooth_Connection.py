@@ -92,6 +92,10 @@ async def main(mac_addr: str):
 if __name__ == "__main__":
    asyncio.run(main(mac_addr))
 
+
+
+
+
 # while True:           # Infinite loop
 #     data = '' 
 #     new_read_value = True
