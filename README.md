@@ -1,4 +1,4 @@
-# Smartwatch
+# Biosensor-to-smartwatch wireless communication
 This project presents a wireless communication solution between a wearable glucose biosensor and an home-made smartwatch.
 
 # Quickstart
