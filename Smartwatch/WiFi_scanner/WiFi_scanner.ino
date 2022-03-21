@@ -1,6 +1,5 @@
-
-#include <WiFi.h>
 #include "ESP8266WiFi.h"   // .h file is the glossary of all functions from ESP8266WiFi library. 
+WiFiClient client;
 
 void setup() {
 
@@ -9,13 +8,12 @@ void setup() {
   Serial.begin(115200);
 
  
-  WiFi.mode(WiFi_STA);       // Set the ESP8266 in the Station mode. This mode allow the ESP to connect to a WiFi network.
-  WiFi.disconnect();           // Disconnection from an eventual network.
-  delay(100);
+//  WiFi.mode(WiFi_STA);       // Set the ESP8266 in the Station mode. This mode allow the ESP to connect to a WiFi network.
+//  WiFi.disconnect();           // Disconnection from an eventual network.
+//  delay(100);
 
-  Serial.println("Setup done");
+//  Serial.println("Setup done");
 }
-
 
 void loop() {
   Serial.println("Scan start");
@@ -33,9 +31,10 @@ void loop() {
       Serial.print(" ("); 
       Serial.print(WiFi.RSSI(i)); 
       Serial.print(")");
-      if WiFi.encryptionType(i) == ENC_TYPE_NONE) {    // Print a "*" if the WiFi Network is crypted 
+      if (WiFi.encryptionType(i) == ENC_TYPE_NONE){     // Print a "*" if the WiFi Network is crypted 
         Serial.println(" ");                            
-      } else {
+    } 
+      else {
         Serial.println("*"); 
       }
      delay(10);
