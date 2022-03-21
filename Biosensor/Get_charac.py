@@ -25,8 +25,11 @@ async def main(mac_addr: str):
           for c in gap.characteristics:              
                print(c)                           # Print the different characteristics (handle) available
 
-     if __name__ == "__main__":
-          asyncio.run(main(sys.argv[1] if len(sys.argv) == 2 else mac_addr))
+     await asyncio.sleep(10.0)                          # Notify function
+     await client.stop_notify(mac_addr)             # Notify function
+
+if __name__ == "__main__":
+     asyncio.run(main(sys.argv[1] if len(sys.argv) == 2 else mac_addr))
 
 
 
