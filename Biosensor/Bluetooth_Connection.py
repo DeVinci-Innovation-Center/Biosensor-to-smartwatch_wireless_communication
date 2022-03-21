@@ -31,13 +31,14 @@ handle30 = "00002dab-0000-1000-8000-00805f9b34fb"      # Handle 30 | D1 | Curren
 handle96 = "00002e01-0000-1000-8000-00805f9b34fb"      # Handle 97 | N1 | Scale factor for current
 handle99 = "00002e02-0000-1000-8000-00805f9b34fb"      # Handle 99 | N2 | Scale-factor for non-offset linear conversion
 
-N0 = 0xff
+N0 = 255
 D0 = 0xff
 X0 = 0xff
 D1 = 0xff
 N1 = 0xff
 N2 = 0xff
 read_value = 0xff
+V0 = 0
 
 # ID_dec = 0        # ID value of the data (byte) sent
 # Timer_dec =     # Timer value in milliseconds
@@ -56,16 +57,18 @@ def read_callback(sender, read_value):
     id_value = read_value[0]
     timer_value = round(read_value[1] / 10**3, 1)
     temperature_value = read_value[2] / 10
+    print(id_value, timer_value, temperature_value)
     V0 = N0/D0 * read_value[3] - X0                # V0 is the voltage readout
     I = -V0 * N1/D1                                # Current
     cg = I/N2                                      # Glucose concentration
 
-    print("ID: ", id_value, "| Timer: ", timer_value, "s ", "| Temperature: ", temperature_value, "°F ", "| Glucose concentration: ", Cg, "µMol")
+    print("ID: ", id_value, "| Timer: ", timer_value, "s ", "| Temperature: ", temperature_value, "°F ", "| Glucose concentration: ", cg, "µMol")
 
 
     return Ec_flex_data(id_value, timer_value, temperature_value, cg)
 
 async def main(mac_addr: str):
+    global D0, N0, X0, D1, N1, N2            # Global variables
 
     device = await BleakScanner.find_device_by_address(mac_addr, timeout=10.0)      # Scan BLE and try to find the ec-Flex during 10 secondes
     if not device:
@@ -75,67 +78,35 @@ async def main(mac_addr: str):
 
         await client.start_notify(handle17, read_callback)    # Notify function se déclenche quand réception d'une data et lance la fonction read_callback.
         # read_value = await client.read_gatt_char(handle17)       # ADC reference voltage
-        N0 = await client.read_gatt_char(handle24)       # ADC reference voltage
-        D0 = await client.read_gatt_char(handle21)       # ADC resolution
-        X0 = await client.read_gatt_char(handle27)       # Virtual ground level
-        D1 = await client.read_gatt_char(handle30)       # Current-to-voltage amplification
-        N1 = await client.read_gatt_char(handle96)       # Scale factor for current
-        N2 = await client.read_gatt_char(handle99)       # Scale-factor for non-offset linear conversion
-        print("D0*100: ", struct.unpack('f', bytes(D0)))
-        print("X0*100: ", struct.unpack('f', bytes(X0)))
-        print("D1*100: ", struct.unpack('f', bytes(D1)))
-        print("N2: ", struct.unpack('f', bytes(N2)))
+        print("N0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle24))))
+        print("D0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle21))))
+        print("X0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle27))))
+        print("D1: ", struct.unpack('i', bytes(await client.read_gatt_char(handle30))))
+        print("N1: ", struct.unpack('i', bytes(await client.read_gatt_char(handle96))))
+        print("N2: ", struct.unpack('i', bytes(await client.read_gatt_char(handle99))))
 
-        await asyncio.sleep(10.0)                          # Notify function
+        N0 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle24)))[0])
+        D0 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle21)))[0])
+        X0 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle27)))[0])
+        D1 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle30)))[0])
+        N1 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle96)))[0])
+        N2 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle99)))[0])
+
+        # N0 = float(struct.unpack('f', bytes(await client.read_gatt_char(handle24)))[0])       # ADC reference voltage
+        # D0 = struct.unpack('f', bytes(await client.read_gatt_char(handle21[0])))       # ADC resolution
+        # X0 = float(struct.unpack('f', bytes(await client.read_gatt_char(handle27[0]))))       # Virtual ground level
+        # D1 = float(struct.unpack('f', bytes(await client.read_gatt_char(handle30[0]))))       # Current-to-voltage amplification
+        # N1 = float(struct.unpack('f', bytes(await client.read_gatt_char(handle96[0]))))       # Scale factor for current
+        # N2 = float(struct.unpack('f', bytes(await client.read_gatt_char(handle99[0]))))       # Scale-factor for non-offset linear conversion
+        print("D0*100: ", D0)
+        print("X0*100: ", X0)
+        print("D1*100: ", D1)
+        print("N2: ", N2)
+
+        await asyncio.sleep(1000.0)                          # Notify function
         await client.stop_notify(handle17)             # Notify function
 
 if __name__ == "__main__":
    asyncio.run(main(mac_addr))
 
 
-
-
-
-# while True:           # Infinite loop
-#     data = '' 
-#     new_read_value = True
-#     while True:
-
-#         # Counter readout (bytes 1-2)
-#         Counter_dec = int(data[1] << 8) + int(data[0])       # Value counter
-        
-#         # Timer readout (bytes 3-4)
-#         Timer_dec = int(data[3] << 8) + int(data[2])    # Timer value in milliseconds
-#         # Delta_t_dec = int(data[3] << 8) + int(data[2]) - Timer_dec
-#         # TimeVal = Delta_t_dec * Counter_dec / 1000           # in seconds
-
-#         #Temperature readout (bytes 5-6)
-#         Temp_dec = int(data[5] << 8) + int(data[4])
-#         Temp_dec = Temp_dec / 10                       # Convert the temperature in °C
-
-        # #Sensor readout (bytes 7-8)
-        # ADC_dec = int(data[7] << 8) + int(data[6])     # Glucose concentration value
-        # V0 = N0/D0 * ADC_dec - X0                      # V0 is the voltage readout
-        # I = -V0 * N1/D1                                # Current
-        # Cg = I/N2                                      # Glucose concentration
-       
-        # print("Byte receive: ", data)
-        # print("Counter value: ", Counter_dec)
-        # print("Temperature: ", Temp_dec)
-        # print("Glucose concentration: ", Cg)
-
-        # new_data = False
-
-
-
-
-
-
-# Listen the data sent by the server
-#s.listen(5)
-#while True:
-#    clientsocket, adress = s.accept()
-#    print(f"connection from {address} has been established.")
-
-# Double client, la smartwatch devrait venir se connecter à mon PC
-# ecFlex_idx = (Unit16)(data[1])
