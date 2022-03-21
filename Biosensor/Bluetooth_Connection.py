@@ -11,8 +11,16 @@ import platform
 import sys
 import struct
 
+from Biosensor.commons import *
+
 from bleak import BleakClient, BleakScanner
 from bleak.exc import BleakError
+from multiprocessing import Value
+
+from Biosensor.Server import run_tcp_server
+
+
+MULTIPROCES_VALUES = ECFlexValues()
 
 # from bleak.uuids import uuid16_dict
 ### Create a dictionnary
@@ -45,12 +53,25 @@ V0 = 0
 # Temp_dec =      # Temperature value
 # ADC_dec =       # Glucose concentration value
 
-class Ec_flex_data:
-        def __init__(self, id_value: int, timer_value: float, temperature_value: float, cg: float):
-                self.id=id_value
-                self.timer=timer_value
-                self.temp=temperature_value
-                self.cg=cg
+def update_value(**kwargs):
+    global MULTIPROCES_VALUES
+    
+    for k in kwargs:
+        v = kwargs[k]
+        t = ECFlexTypes.from_name(k)
+        if t is None:
+            print("NO ATTRIBUTE ", k)
+            continue
+        MULTIPROCES_VALUES[t] = v
+    print("Values Updated")
+    print(MULTIPROCES_VALUES.to_bytes())
+
+# class Ec_flex_data:
+#         def __init__(self, id_value: int, timer_value: float, temperature_value: float, cg: float):
+#                 self.id=id_value
+#                 self.timer=timer_value
+#                 self.temp=temperature_value
+#                 self.cg=cg
 
 def read_callback(sender, read_value):
     read_value = struct.unpack('<4H', read_value)      # Convert bytesarray readed into bytes (for each line). '<' shows le sens de lecture
@@ -64,8 +85,8 @@ def read_callback(sender, read_value):
 
     print("ID: ", id_value, "| Timer: ", timer_value, "s ", "| Temperature: ", temperature_value, "°F ", "| Glucose concentration: ", cg, "µMol")
 
+    update_value(id=id_value, timer=timer_value, temperature=temperature_value, glucose_concentration=cg)
 
-    return Ec_flex_data(id_value, timer_value, temperature_value, cg)
 
 async def main(mac_addr: str):
     global D0, N0, X0, D1, N1, N2            # Global variables
@@ -98,6 +119,7 @@ async def main(mac_addr: str):
         # D1 = float(struct.unpack('f', bytes(await client.read_gatt_char(handle30[0]))))       # Current-to-voltage amplification
         # N1 = float(struct.unpack('f', bytes(await client.read_gatt_char(handle96[0]))))       # Scale factor for current
         # N2 = float(struct.unpack('f', bytes(await client.read_gatt_char(handle99[0]))))       # Scale-factor for non-offset linear conversion
+
         print("D0*100: ", D0)
         print("X0*100: ", X0)
         print("D1*100: ", D1)
@@ -108,5 +130,6 @@ async def main(mac_addr: str):
 
 if __name__ == "__main__":
    asyncio.run(main(mac_addr))
+   run_tcp_server(MULTIPROCES_VALUES)
 
 

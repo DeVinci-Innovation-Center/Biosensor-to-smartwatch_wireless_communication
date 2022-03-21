@@ -12,7 +12,7 @@
 const char* ssid     = STASSID;       // Replace STASSID by "your_WiFi_network_name"
 const char* password = STAPSK;        // Replace STAPSK by "your_WiFi_network_password"
 
-const char* host = "smartwatch.net";      // Enter your domain
+const char* host = "172.21.72.191";      // Enter your domain
 const uint16_t port = 1234;
 
 void setup() {
