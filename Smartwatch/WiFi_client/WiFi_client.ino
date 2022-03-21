@@ -1,13 +1,12 @@
 /*
-    This sketch establishes a TCP connection to a "quote of the day" service.
-    It sends a "hello" message, and then prints received data.
+
 */
 
 #include <ESP8266WiFi.h>
 
 #ifndef STASSID
-#define STASSID "your-ssid"
-#define STAPSK  "your-password"
+#define STASSID "PoleDeVinci_DVIC"        // Enter your network SSID
+#define STAPSK  "8PfURsp!dvic"       // Enter your network password
 #endif
 
 const char* ssid     = STASSID;       // Replace STASSID by "your_WiFi_network_name"
@@ -43,7 +42,6 @@ void setup() {
 }
 
 
-
 void loop() {
   static bool wait = false;
 
@@ -62,12 +60,11 @@ void loop() {
     return;
   }
 
-
-  // Make a HTTP request
-  client.println("GET / HTTP/1.1");      
-  client.println("Host: ..."); 
-  client.println("Connection close"); 
-  client.println(); 
+//  // Make a HTTP request
+//  client.println("GET / HTTP/1.1");      
+//  client.println("Host: ..."); 
+//  client.println("Connection close"); 
+//  client.println(); 
 
   // Wait for receiving data during 10 seconds
   unsigned long timeout = millis();
@@ -83,16 +80,15 @@ void loop() {
   // Data are received
   while(client.available()) {
     int ecFlex_data = client.read();
-    Serial.print(c)
+    Serial.print(ecFlex_data);
   }
 
   // Serial receive buffer
-  Serial.setTimeout(1000)            // ParseInt() wait 1 sec before reading, instead of reading in each byte as it arrives
+  Serial.setTimeout(1000);            // ParseInt() wait 1 sec before reading, instead of reading in each byte as it arrives
   while (Serial.available() > 0) {
-    int ecFlex_data = Serial.parseInt(SKIP_ALL);
+    int ecFlex_data = Serial.parseInt();
     Serial.print(ecFlex_data);
 }
-
 
   // Close the connection
   Serial.println();
