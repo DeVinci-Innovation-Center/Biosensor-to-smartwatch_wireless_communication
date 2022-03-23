@@ -1,7 +1,7 @@
 CREATE TABLE ec-Flex_data(
     ID INTEGER,
-    Timer FLOAT,
-    Temperature FLOAT,
+    Timer INTEGER,
+    Temperature INTEGER,
     Glucose concentration FLOAT
 );
 
