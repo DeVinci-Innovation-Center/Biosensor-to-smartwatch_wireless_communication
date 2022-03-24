@@ -3,8 +3,6 @@ This project presents a wireless communication solution between a wearable gluco
 
 # Quickstart
 
-file:///home/vivien/Images/Functional_diagram.png
-
 Download the code. Enter the MAC address of your ec-Flex device in the [Get_charac.py](https://github.com/DeVinci-Innovation-Center/Smartwatch/blob/main/Get_charac.py) program. Run the code and recover the addresses of handles 17, 21, 24, 27, 30, 96 and 99 in the vendor service. Open the [Bluetooth_Connection.py](https://github.com/DeVinci-Innovation-Center/Smartwatch/blob/main/Bluetooth_Connection.py) file and enter the handles addresses.
 
 # Functional diagram
