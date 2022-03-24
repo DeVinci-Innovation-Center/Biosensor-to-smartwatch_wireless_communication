@@ -23,6 +23,7 @@ MULTIPROCES_VALUES = EcFlexValues()
 #characteristics["ecFlex_data"] = #"00002d8d-0000-1000-8000-00805f9b34fb"
 # uuid16_dict = {v: k for k, v in uuid16_dict.items()}
 
+### Addresses definition
 mac_addr = "00:35:ff:0b:ae:4c"                            # Mac address of the ec-Flex
 vendor_service = "00002d8d-0000-1000-8000-00805f9b34fb"   # Vendor sevice 
 
@@ -34,6 +35,7 @@ handle30 = "00002dab-0000-1000-8000-00805f9b34fb"         # Handle 30 | d1 | Cur
 handle96 = "00002e01-0000-1000-8000-00805f9b34fb"         # Handle 96 | n1 | Scale factor for current
 handle99 = "00002e02-0000-1000-8000-00805f9b34fb"         # Handle 99 | n2 | Scale-factor for non-offset linear conversion
 
+##### Value updater #####
 def update_value(**kwargs):
     global MULTIPROCES_VALUES
     
@@ -47,13 +49,7 @@ def update_value(**kwargs):
     print("Values Updated")
     print(MULTIPROCES_VALUES.to_bytes())
 
-# class Ec_flex_data:
-#         def __init__(self, id_value: int, timer_value: float, temperature_value: float, cg: float):
-#                 self.id=id_value
-#                 self.timer=timer_value
-#                 self.temp=temperature_value
-#                 self.cg=cg
-
+##### Data processing #####
 def read_callback(sender, read_value):
     read_value = struct.unpack('<4H', read_value)      # Convert bytesarray readed into bytes (for each line). '<' shows reading direction
     id_value = read_value[0]                           # ID value of the byte sent
@@ -67,7 +63,7 @@ def read_callback(sender, read_value):
 
     update_value(id=id_value, timer=timer_value, temperature=temperature_value, glucose_concentration=cg)
 
-
+##### Bluetooth scanner #####
 async def main(mac_addr: str):
     global d0, n0, x0, d1, n1, n2            # Global variables
 
@@ -77,8 +73,9 @@ async def main(mac_addr: str):
 
     async with BleakClient(device) as client:    # Async with allows 
 
-        await client.start_notify(handle17, read_callback)    # Notify function se déclenche quand réception d'une data et lance la fonction read_callback.
-        # read_value = await client.read_gatt_char(handle17)       # ADC reference voltage
+        await client.start_notify(handle17, read_callback)    # Notify function is triggered when receiving data and launches the read_callback function.
+
+        ##### Data acquisition #####
         print("n0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle24))))
         print("d0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle21))))
         print("x0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle27))))
