@@ -7,8 +7,8 @@ import struct
 
 class EcFlexTypes(Enum):
      ID = ('id', 'i')
-     TIMER = ('timer', 'i')
-     TEMPERATURE = ('temperature', 'i')
+     TIMER = ('timer', 'f')
+     TEMPERATURE = ('temperature', 'f')
      GLUCOSE_CONCENTRATION = ('glucose_concentration', 'f')
 
 

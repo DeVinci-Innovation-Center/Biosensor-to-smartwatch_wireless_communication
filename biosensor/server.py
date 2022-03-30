@@ -1,12 +1,12 @@
-#################################################################################
-###     A python script to send the data to the client (the WeMos) by WiFi    ###
-#################################################################################
+#####################################################################
+###     A python script to send the data to the client by WiFi    ###
+#####################################################################
 
 import socket
 import time
 from commons import *
 
-# My IP address on DVIC WiFi network: 172.21.72.191
+
 def run_tcp_server(data: EcFlexValues):
 
      port = 1234

@@ -31,7 +31,9 @@ async def main(mac_addr: str):
      await client.stop_notify(mac_addr)                  
 
 if __name__ == "__main__":
+     print("Start bluetooth scanning")
      asyncio.run(main(sys.argv[1] if len(sys.argv) == 2 else mac_addr))
+     
 
 
 

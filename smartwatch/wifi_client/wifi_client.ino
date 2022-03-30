@@ -13,7 +13,7 @@
 const char* ssid     = STASSID;          // Replace STASSID by "your_WiFi_network_name"
 const char* password = STAPSK;           // Replace STAPSK by "your_WiFi_network_password"
 
-const char* host = "172.21.72.191";      // Enter your domain
+const char* host = "172.17.0.1";      // Enter your domain
 const uint16_t port = 1234;
 
 void setup() {
@@ -82,82 +82,84 @@ void loop() {
   while (Serial.available() > 0) {
     int ecFlex_data = Serial.parseInt();
     Serial.print(ecFlex_data);
-}
+  }
 
   // Serial receive buffer 
   Serial.setTimeout(1000);            // ParseInt() wait 1 sec before reading, instead of reading in each byte as it arrives
   while (Serial.available() > 0) {
     byte ecFlex_data = Serial.parseInt();
-
+    Serial.print(ecFlex_data);
+  }
 ////////////////////////////////////////////////////////////////////////////////
 
     // Data intepretation
     // Try 1
-    stream.readBytes(buffer, length);
-    // Serial.readBytes(buffer, length);
-    int id                      = ((ecFlex_data[1] << 8) + data[0]);
-    int timer                   = ((ecFlex_data[3] << 8) + data[2]);
-    int temperature             = ((ecFlex_data[5] << 8) + data[4]);
-    float glucose concentration = ((ecFlex_data[7] << 8) + data[6]);
-    Serial.print(ecFlex_data);
-}
+//    Stream.readBytes(buffer, length);
+//    // Serial.readBytes(buffer, length);
+//    int id                      = ((ecFlex_data[1] << 8) + data[0]);
+//    int timer                   = ((ecFlex_data[3] << 8) + data[2]);
+//    int temperature             = ((ecFlex_data[5] << 8) + data[4]);
+//    float glucose concentration = ((ecFlex_data[7] << 8) + data[6]);
+//    Serial.print(ecFlex_data);
+//}
     
     // Try 2
-    char *str = (char *)onoffbutton.lastread; // = "#FF7F00"
-  
-    int id                      = convert_hex_to_decimal(str ecFlex_data[1] + str ecFlex_data[2]);   // ToDo: find convert_hex_to_decimal
-    int timer                   = convert_hex_to_decimal(str ecFlex_data[3] + str ecFlex_data[4]);  
-    int temperature             = convert_hex_to_decimal(str ecFlex_data[5] + str ecFlex_data[6]);  
-    float glucose_concentration = convert_hex_to_decimal(str ecFlex_data[7] + str ecFlex_data[8]);  
-    Serial.print(ecFlex_data)
     
-    // Try 3     extracting a 32 bit int into a int8_t
-    if (!PassTwo) {
-            rx_frame.FIR.B.FF = CAN_frame_std;
-            rx_frame.MsgID = 1;
-            rx_frame.FIR.B.DLC = 8;
-            rx_frame.data.u8[0] = *item & 0xFF;
-            rx_frame.data.u8[1] = (*item >> 8) & 0xFF;
-            rx_frame.data.u8[2] = (*item >> 16) & 0xFF;
-            rx_frame.data.u8[3] = (*item >> 24) & 0xFF;
-            PassTwo = true;
-          } else {
-            rx_frame.data.u8[4] = *item & 0xFF;;
-            rx_frame.data.u8[5] = (*item >> 8) & 0xFF;
-            rx_frame.data.u8[6] = (*item >> 16) & 0xFF;
-            rx_frame.data.u8[7] = (*item >> 24) & 0xFF;
-            ESP32Can.CANWriteFrame(&rx_frame); // send items over CAN buss
-            PassTwo = false;
-          }
+//    int id                      = convert_hex_to_decimal(char ecFlex_data[1] + char ecFlex_data[2]);   // ToDo: find convert_hex_to_decimal
+//    int timer                   = convert_hex_to_decimal(char ecFlex_data[3] + char ecFlex_data[4]);  //
+//    int temperature             = convert_hex_to_decimal(char ecFlex_data[5] + char ecFlex_data[6]);  
+//    float glucose_concentration = convert_hex_to_decimal(char ecFlex_data[7] + char ecFlex_data[8]);  
+
+    
+//    // Try 3     extracting a 32 bit int into a int8_t
+//    if (!PassTwo) {
+//            rx_frame.FIR.B.FF = CAN_frame_std;
+//            rx_frame.MsgID = 1;
+//            rx_frame.FIR.B.DLC = 8;
+//            rx_frame.data.u8[0] = *item & 0xFF;
+//            rx_frame.data.u8[1] = (*item >> 8) & 0xFF;
+//            rx_frame.data.u8[2] = (*item >> 16) & 0xFF;
+//            rx_frame.data.u8[3] = (*item >> 24) & 0xFF;
+//            PassTwo = true;
+//          } else {
+//            rx_frame.data.u8[4] = *item & 0xFF;;
+//            rx_frame.data.u8[5] = (*item >> 8) & 0xFF;
+//            rx_frame.data.u8[6] = (*item >> 16) & 0xFF;
+//            rx_frame.data.u8[7] = (*item >> 24) & 0xFF;
+//            ESP32Can.CANWriteFrame(&rx_frame); // send items over CAN buss
+//            PassTwo = false;
+//          }
+
   
-    // Try 4
-    void HexToColor(const char* hex, byte *container)
-  {
-      char str[3] = {};
-      //get r
-      str[0] = hex[1];
-      str[1] = hex[2];
-      container[0] = (byte)strtol(str, NULL, 16);
-  
-      //get b
-      str[0] = hex[3];
-      str[1] = hex[4];
-      container[1] = (byte)strtol(str, NULL, 16);
-  
-      //get g
-      str[0] = hex[5];
-      str[1] = hex[6];
-      container[2] = (byte)strtol(str, NULL, 16);
-  }
-  
-  //usage
-  {
-     ...
-     char *hex = (char *)onoffbutton.lastread;
-     byte color[3] = {};
-     HexToColor(hex, color);
-  }
-  
+//    // Try 4
+//    void HexToColor(const char* hex, byte *container)
+//  {
+//      char str[3] = {};
+//      //get r
+//      str[0] = hex[1];
+//      str[1] = hex[2];
+//      container[0] = (byte)strtol(str, NULL, 16);
+//  
+//      //get b
+//      str[0] = hex[3];
+//      str[1] = hex[4];
+//      container[1] = (byte)strtol(str, NULL, 16);
+//  
+//      //get g
+//      str[0] = hex[5];
+//      str[1] = hex[6];
+//      container[2] = (byte)strtol(str, NULL, 16);
+//  }
+//  
+//  //usage
+//  {
+//     ...
+//     char *hex = (char *)onoffbutton.lastread;
+//     byte color[3] = {};
+//     HexToColor(hex, color);
+//  }
+
+
     // Try 5
   
   //(TIBLERawSampleModel *) rawSamplevalue {
@@ -188,7 +190,6 @@ void loop() {
   Serial.println();
   Serial.println("closing connection");
   client.stop();
-
 
   delay(30000);  // Execute every 30 secondes
 

@@ -1,8 +1,8 @@
-CREATE TABLE ec-Flex_data(
+CREATE TABLE IF NOT EXISTS ecFlex_data(
     ID INTEGER,
     Timer INTEGER,
     Temperature INTEGER,
-    Glucose concentration FLOAT
+    Glucose_concentration FLOAT
 );
 
 

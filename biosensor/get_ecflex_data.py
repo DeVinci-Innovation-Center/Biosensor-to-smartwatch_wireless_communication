@@ -1,41 +1,39 @@
-#############################################################################
-###   A python script to recover the data from the server (the ec-Flex)   ###
-###                     and print user-friendly values                    ###
-#############################################################################
+###############################################################################
+###    A python script to recover the data from the server (the ec-Flex),   ###
+###          send it to the client and print user-friendly values           ###
+###############################################################################
 
+#### Imports ####
 import asyncio
 import struct
-
-from commons import *
-
+import sqlite3
+import os
 from bleak import BleakClient, BleakScanner
 from bleak.exc import BleakError
 from multiprocessing import Value
-
 from server import run_tcp_server
+from commons import *
 
-
+#### Global variables ####
+DB_FILE = '/home/vivien/Documents/GitHub/Biosensor-to-smartwatch_wireless_communication/database.db'     # Enter the access path of the database.db file
+SCHEMA_FILE = '/home/vivien/Documents/GitHub/Biosensor-to-smartwatch_wireless_communication/schema.sql'  # Enter the access path of the schema.sql file
 MULTIPROCES_VALUES = EcFlexValues()
+N0, D0, X0, N1, d1, N2 = 1,1,1,1,1,1
 
-# from bleak.uuids import uuid16_dict
-### Create a dictionnary
-#characteristics = {}
-#characteristics["ecFlex_data"] = #"00002d8d-0000-1000-8000-00805f9b34fb"
-# uuid16_dict = {v: k for k, v in uuid16_dict.items()}
 
-### Addresses definition
-mac_addr = "00:35:ff:0b:ae:4c"                            # Mac address of the ec-Flex
-vendor_service = "00002d8d-0000-1000-8000-00805f9b34fb"   # Vendor sevice 
-
+#### Addresses definition ####
+mac_addr = "00:35:ff:0b:ae:4c"                            # Ec-Flex mac address 
+vendor_service = "00002d8d-0000-1000-8000-00805f9b34fb"   # Vendor sevice address
 handle17 = "00002da7-0000-1000-8000-00805f9b34fb"         # Handle 17 | from Vendor service
-handle24 = "00002da9-0000-1000-8000-00805f9b34fb"         # Handle 24 | n0 | ADC reference voltage
-handle21 = "00002da8-0000-1000-8000-00805f9b34fb"         # Handle 21 | d0 | ADC resolution
-handle27 = "00002daa-0000-1000-8000-00805f9b34fb"         # Handle 27 | x0 | Virtual ground level
+handle24 = "00002da9-0000-1000-8000-00805f9b34fb"         # Handle 24 | N0 | ADC reference voltage
+handle21 = "00002da8-0000-1000-8000-00805f9b34fb"         # Handle 21 | D0 | ADC resolution
+handle27 = "00002daa-0000-1000-8000-00805f9b34fb"         # Handle 27 | X0 | Virtual ground level
 handle30 = "00002dab-0000-1000-8000-00805f9b34fb"         # Handle 30 | d1 | Current-to-voltage amplification
-handle96 = "00002e01-0000-1000-8000-00805f9b34fb"         # Handle 96 | n1 | Scale factor for current
-handle99 = "00002e02-0000-1000-8000-00805f9b34fb"         # Handle 99 | n2 | Scale-factor for non-offset linear conversion
+handle96 = "00002e01-0000-1000-8000-00805f9b34fb"         # Handle 96 | N1 | Scale factor for current
+handle99 = "00002e02-0000-1000-8000-00805f9b34fb"         # Handle 99 | N2 | Scale-factor for non-offset linear conversion
 
-##### Value updater #####
+
+##### Data updater #####
 def update_value(**kwargs):
     global MULTIPROCES_VALUES
     
@@ -49,23 +47,45 @@ def update_value(**kwargs):
     print("Values Updated")
     print(MULTIPROCES_VALUES.to_bytes())
 
+
 ##### Data processing #####
 def read_callback(sender, read_value):
-    read_value = struct.unpack('<4H', read_value)      # Convert bytesarray readed into bytes (for each line). '<' shows reading direction
-    id_value = read_value[0]                           # ID value of the byte sent
-    timer_value = round(read_value[1] / 10**3, 1)      # Timer value in milliseconds
-    temperature_value = read_value[2] / 10             # Temperature value
-    v0 = n0/d0 * read_value[3] - x0                    # v0 is the voltage readout
-    i = -v0 * n1/d1                                    # Current
-    cg = i/n2                                          # Glucose concentration
+    read_value = struct.unpack('<4H', read_value)        # Convert bytesarray readed into bytes (for each line). '<' shows reading direction.
+    id_value = read_value[0]                             # ID value of the byte sent
+    timer_value = round(read_value[1] / 10**3, 1)        # Timer value in milliseconds
+    temperature_value = read_value[2] / 10               # Temperature value
+    v0 = N0/D0 * read_value[3] - X0                      # v0 is the voltage readout
+    i = -v0 * N1/d1                                      # Current
+    cg = i/N2                                            # Glucose concentration
+# See ec-Flex quick-start document for more information.
 
     print("ID: ", id_value, "| Timer: ", timer_value, "s ", "| Temperature: ", temperature_value, "°F ", "| Glucose concentration: ", cg, "µMol")
-
     update_value(id=id_value, timer=timer_value, temperature=temperature_value, glucose_concentration=cg)
+
+
+#### Database setup ####
+def check_db(database):
+    os.path.exists(database)                             # Check if the file already exists in the system.
+
+def setup_db(DB_FILE, SCHEMA_FILE):
+    if check_db(DB_FILE):
+        print('Database already exists. Exiting...')
+    
+    with open(SCHEMA_FILE, 'r') as rf:
+        schema = rf.read()                               # Read the schema from the file.
+        print(schema, SCHEMA_FILE)
+    with sqlite3.connect(DB_FILE) as conn:
+        print('Connection to database established') 
+        conn.executescript(schema)                       # Execute the SQL query to create the table.
+        print('Database table created')
+        conn.executescript(read_callback)                # Save the list of 4 values returned by read_callback into the database.  
+        print('Value inserted into the database table')
+    print('Connection closed')
+
 
 ##### Bluetooth scanner #####
 async def main(mac_addr: str):
-    global d0, n0, x0, d1, n1, n2            # Global variables
+    global D0, N0, X0, d1, N1, N2
 
     device = await BleakScanner.find_device_by_address(mac_addr, timeout=10.0)      # Scan BLE and try to find the ec-Flex during 10 secondes
     if not device:
@@ -73,34 +93,36 @@ async def main(mac_addr: str):
 
     async with BleakClient(device) as client:    # Async with allows 
 
-        await client.start_notify(handle17, read_callback)    # Notify function is triggered when receiving data and launches the read_callback function.
+        await client.start_notify(handle17, read_callback)                          # Notify function is triggered when receiving data and launches the read_callback function.
 
         ##### Data acquisition #####
-        print("n0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle24))))
-        print("d0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle21))))
-        print("x0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle27))))
-        print("d1: ", struct.unpack('i', bytes(await client.read_gatt_char(handle30))))
-        print("n1: ", struct.unpack('i', bytes(await client.read_gatt_char(handle96))))
-        print("n2: ", struct.unpack('i', bytes(await client.read_gatt_char(handle99))))
+        print("N0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle24))))
+        print("D0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle21))))
+        print("X0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle27))))
+        print("N1: ", struct.unpack('i', bytes(await client.read_gatt_char(handle96))))
+        print("d1: ", struct.unpack('i', bytes(await client.read_gatt_char(handle30))))        
+        print("N2: ", struct.unpack('i', bytes(await client.read_gatt_char(handle99))))
 
-        n0 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle24)))[0])      # ADC reference voltage
-        d0 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle21)))[0])      # ADC resolution
-        x0 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle27)))[0])      # Virtual ground level
-        d1 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle30)))[0])      # Current-to-voltage amplification
-        n1 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle96)))[0])      # Scale factor for current
-        n2 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle99)))[0])      # Scale-factor for non-offset linear conversion
+        N0 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle24)))[0])      # ADC reference voltage
+        D0 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle21)))[0])      # ADC resolution
+        X0 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle27)))[0])      # Virtual ground level
+        N1 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle96)))[0])      # Scale factor for current
+        d1 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle30)))[0])      # Current-to-voltage amplification        
+        N2 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle99)))[0])      # Scale-factor for non-offset linear conversion
 
-        print("d0*100: ", d0)
-        print("x0*100: ", x0)
+        print("D0*100: ", D0)
+        print("X0*100: ", X0)
         print("d1*100: ", d1)
-        print("n2: ", n2)
+        print("N2: ", N2)
 
-        await asyncio.sleep(1000.0)                # Suspend the task for 1 second
-        await client.stop_notify(handle17)         # Notify function
+        await asyncio.sleep(1000.0)           # Suspend the task for 1 second
+        await client.stop_notify(handle17)    # Notify function
+
+        setup_db(DB_FILE, SCHEMA_FILE)
 
 if __name__ == "__main__":
    print("Start bluetooth scanning")
-   asyncio.run(main(mac_addr))                     # Execute the coroutine and return the result
+   asyncio.run(main(mac_addr))                # Execute the coroutine and return the result
    run_tcp_server(MULTIPROCES_VALUES)
 
 
