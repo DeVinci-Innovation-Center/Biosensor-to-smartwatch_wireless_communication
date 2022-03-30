@@ -18,7 +18,7 @@ from commons import *
 DB_FILE = '/home/vivien/Documents/GitHub/Biosensor-to-smartwatch_wireless_communication/database.db'     # Enter the access path of the database.db file
 SCHEMA_FILE = '/home/vivien/Documents/GitHub/Biosensor-to-smartwatch_wireless_communication/schema.sql'  # Enter the access path of the schema.sql file
 MULTIPROCES_VALUES = EcFlexValues()
-N0, D0, X0, N1, d1, N2 = 1,1,1,1,1,1
+N0, D0, X0, N1, D1, N2 = 1,1,1,1,1,1
 
 
 #### Addresses definition ####
@@ -28,7 +28,7 @@ handle17 = "00002da7-0000-1000-8000-00805f9b34fb"         # Handle 17 | from Ven
 handle24 = "00002da9-0000-1000-8000-00805f9b34fb"         # Handle 24 | N0 | ADC reference voltage
 handle21 = "00002da8-0000-1000-8000-00805f9b34fb"         # Handle 21 | D0 | ADC resolution
 handle27 = "00002daa-0000-1000-8000-00805f9b34fb"         # Handle 27 | X0 | Virtual ground level
-handle30 = "00002dab-0000-1000-8000-00805f9b34fb"         # Handle 30 | d1 | Current-to-voltage amplification
+handle30 = "00002dab-0000-1000-8000-00805f9b34fb"         # Handle 30 | D1 | Current-to-voltage amplification
 handle96 = "00002e01-0000-1000-8000-00805f9b34fb"         # Handle 96 | N1 | Scale factor for current
 handle99 = "00002e02-0000-1000-8000-00805f9b34fb"         # Handle 99 | N2 | Scale-factor for non-offset linear conversion
 
@@ -55,7 +55,7 @@ def read_callback(sender, read_value):
     timer_value = round(read_value[1] / 10**3, 1)        # Timer value in milliseconds
     temperature_value = read_value[2] / 10               # Temperature value
     v0 = N0/D0 * read_value[3] - X0                      # v0 is the voltage readout
-    i = -v0 * N1/d1                                      # Current
+    i = -v0 * N1/D1                                      # Current
     cg = i/N2                                            # Glucose concentration
 # See ec-Flex quick-start document for more information.
 
@@ -85,7 +85,7 @@ def setup_db(DB_FILE, SCHEMA_FILE):
 
 ##### Bluetooth scanner #####
 async def main(mac_addr: str):
-    global D0, N0, X0, d1, N1, N2
+    global D0, N0, X0, D1, N1, N2
 
     device = await BleakScanner.find_device_by_address(mac_addr, timeout=10.0)      # Scan BLE and try to find the ec-Flex during 10 secondes
     if not device:
@@ -100,19 +100,19 @@ async def main(mac_addr: str):
         print("D0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle21))))
         print("X0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle27))))
         print("N1: ", struct.unpack('i', bytes(await client.read_gatt_char(handle96))))
-        print("d1: ", struct.unpack('i', bytes(await client.read_gatt_char(handle30))))        
+        print("D1: ", struct.unpack('i', bytes(await client.read_gatt_char(handle30))))        
         print("N2: ", struct.unpack('i', bytes(await client.read_gatt_char(handle99))))
 
         N0 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle24)))[0])      # ADC reference voltage
         D0 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle21)))[0])      # ADC resolution
         X0 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle27)))[0])      # Virtual ground level
         N1 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle96)))[0])      # Scale factor for current
-        d1 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle30)))[0])      # Current-to-voltage amplification        
+        D1 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle30)))[0])      # Current-to-voltage amplification        
         N2 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle99)))[0])      # Scale-factor for non-offset linear conversion
 
         print("D0*100: ", D0)
         print("X0*100: ", X0)
-        print("d1*100: ", d1)
+        print("D1*100: ", D1)
         print("N2: ", N2)
 
         await asyncio.sleep(1000.0)           # Suspend the task for 1 second
