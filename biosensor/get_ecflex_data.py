@@ -10,11 +10,13 @@ import sqlite3
 import os
 from bleak import BleakClient, BleakScanner
 from bleak.exc import BleakError
-from multiprocessing import Value
+from multiprocessing import Value, Process
+from threading import Thread
 from server import run_tcp_server
 from commons import *
 
-#### Global variables ####
+
+#### Constants definition ####
 DB_FILE = '/home/vivien/Documents/GitHub/Biosensor-to-smartwatch_wireless_communication/database.db'     # Enter the access path of the database.db file
 SCHEMA_FILE = '/home/vivien/Documents/GitHub/Biosensor-to-smartwatch_wireless_communication/schema.sql'  # Enter the access path of the schema.sql file
 MULTIPROCES_VALUES = EcFlexValues()
@@ -33,23 +35,27 @@ handle96 = "00002e01-0000-1000-8000-00805f9b34fb"         # Handle 96 | N1 | Sca
 handle99 = "00002e02-0000-1000-8000-00805f9b34fb"         # Handle 99 | N2 | Scale-factor for non-offset linear conversion
 
 
+#### Database setup ####
+with open(SCHEMA_FILE, 'r') as rf:
+    schema = rf.read()                           # Read the schema from the file.
+    print(schema, SCHEMA_FILE)
+conn = sqlite3.connect(DB_FILE)
+print('Connection to database established') 
+conn.executescript(schema)                       # Execute the SQL query to create the table.
+conn.commit()
+print('Database table created')
+
+
 ##### Data updater #####
 def update_value(**kwargs):
     global MULTIPROCES_VALUES
-    
     for k in kwargs:
         v = kwargs[k]
-        t = EcFlexTypes.from_name(k)
-        if t is None:
-            print("NO ATTRIBUTE ", k)
-            continue
-        MULTIPROCES_VALUES[t] = v
-    print("Values Updated")
-    print(MULTIPROCES_VALUES.to_bytes())
+        MULTIPROCES_VALUES[k] = v
 
 
 ##### Data processing #####
-def read_callback(sender, read_value):
+def read_callback(sender, read_value):                   # This function is called on notification
     read_value = struct.unpack('<4H', read_value)        # Convert bytesarray readed into bytes (for each line). '<' shows reading direction.
     id_value = read_value[0]                             # ID value of the byte sent
     timer_value = round(read_value[1] / 10**3, 1)        # Timer value in milliseconds
@@ -61,26 +67,8 @@ def read_callback(sender, read_value):
 
     print("ID: ", id_value, "| Timer: ", timer_value, "s ", "| Temperature: ", temperature_value, "°F ", "| Glucose concentration: ", cg, "µMol")
     update_value(id=id_value, timer=timer_value, temperature=temperature_value, glucose_concentration=cg)
-
-
-#### Database setup ####
-def check_db(database):
-    os.path.exists(database)                             # Check if the file already exists in the system.
-
-def setup_db(DB_FILE, SCHEMA_FILE):
-    if check_db(DB_FILE):
-        print('Database already exists. Exiting...')
-    
-    with open(SCHEMA_FILE, 'r') as rf:
-        schema = rf.read()                               # Read the schema from the file.
-        print(schema, SCHEMA_FILE)
-    with sqlite3.connect(DB_FILE) as conn:
-        print('Connection to database established') 
-        conn.executescript(schema)                       # Execute the SQL query to create the table.
-        print('Database table created')
-        conn.executescript(read_callback)                # Save the list of 4 values returned by read_callback into the database.  
-        print('Value inserted into the database table')
-    print('Connection closed')
+    conn.execute("insert into ecFlex_data values (?, ?, ?, ?)", (id_value, timer_value, temperature_value, cg))
+    conn.commit()
 
 
 ##### Bluetooth scanner #####
@@ -91,11 +79,12 @@ async def main(mac_addr: str):
     if not device:
         raise BleakError(f"The device with address {mac_addr} could not be found.")
 
-    async with BleakClient(device) as client:    # Async with allows 
+    async with BleakClient(device) as client:  
 
-        await client.start_notify(handle17, read_callback)                          # Notify function is triggered when receiving data and launches the read_callback function.
+        await client.start_notify(handle17, read_callback)       # Activate notification for the handle / characteristic 17. Call read_callback function on notification.
 
-        ##### Data acquisition #####
+
+##### Constants acquisition #####
         print("N0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle24))))
         print("D0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle21))))
         print("X0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle27))))
@@ -110,19 +99,18 @@ async def main(mac_addr: str):
         D1 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle30)))[0])      # Current-to-voltage amplification        
         N2 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle99)))[0])      # Scale-factor for non-offset linear conversion
 
-        print("D0*100: ", D0)
-        print("X0*100: ", X0)
-        print("D1*100: ", D1)
-        print("N2: ", N2)
+        # print("D0*100: ", D0)
+        # print("X0*100: ", X0)
+        # print("D1*100: ", D1)
+        # print("N2: ", N2)
 
         await asyncio.sleep(1000.0)           # Suspend the task for 1 second
-        await client.stop_notify(handle17)    # Notify function
+        await client.stop_notify(handle17)    # Stop wainting for a notification on the handle / characteristic 17.
 
-        setup_db(DB_FILE, SCHEMA_FILE)
 
+#### main ####
 if __name__ == "__main__":
-   print("Start bluetooth scanning")
-   asyncio.run(main(mac_addr))                # Execute the coroutine and return the result
-   run_tcp_server(MULTIPROCES_VALUES)
-
+    print("Start bluetooth scanning")
+    Thread(target=run_tcp_server, args=(MULTIPROCES_VALUES,)).start()      # Allow to have shared memory
+    asyncio.run(main(mac_addr))                # Execute the coroutine and return the result
 

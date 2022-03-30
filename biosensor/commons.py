@@ -1,5 +1,6 @@
 from enum import Enum
 from multiprocessing import Value
+import string
 import struct
 
 # id_value: int, timer_value: float, temperature_value: float, cg: float
@@ -30,8 +31,8 @@ class EcFlexValues():
      def __getitem__(self, id: EcFlexTypes):
           return self.values[id]
 
-     def __setitem__(self, id: EcFlexTypes, value: "Any"):
-          self.values[id] = Value(id.data_type(), value)
+     def __setitem__(self, id: string, value: "Any"):
+          self.values[id] = value
 
      def to_bytes(self):
           frmt = ''
@@ -41,3 +42,10 @@ class EcFlexValues():
                     frmt += k.data_type()
                     b += struct.pack(k.data_type(), self.values[k].value)        
           return b
+
+     def to_string(self):
+          if "temperature" in self.values and "glucose_concentration" in self.values:
+               temp = f"{self.values['temperature']:.1f}"
+               gc = f"{self.values['glucose_concentration']:.2f}".zfill(6)
+               return temp + ';' + gc 
+          return ''
