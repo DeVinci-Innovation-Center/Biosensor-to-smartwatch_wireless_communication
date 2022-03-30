@@ -1,5 +1,5 @@
 # Biosensor-to-smartwatch wireless communication
-This project presents a wireless communication solution between a wearable glucose biosensor and an home-made smartwatch.
+This project presents a wireless communication solution between a wearable glucose biosensor from Zeammer&Peacock and an home-made smartwatch.
 
 # Quickstart
 
@@ -7,11 +7,16 @@ Download the code. Enter the MAC address of your ec-Flex device in the [Get_char
 
 # Functional diagram
 
-![Image1: Functional diagram](file:///home/vivien/Images/Functional_diagram.png)
+<p align="center">
+  <img src=https://github.com/DeVinci-Innovation-Center/Biosensor-to-smartwatch_wireless_communication/blob/main/images/functional_diagram.png?raw=true "Functional diagram">
+</p>
 
 # Deployment diagram
 
-![Image1: Functional diagram](file:///home/vivien/Images/deployment_diagram.png)
+<p align="center">
+  <img src=https://github.com/DeVinci-Innovation-Center/Biosensor-to-smartwatch_wireless_communication/blob/main/images/deployment_diagram.png?raw=true "Demployment diagram">
+</p>
 
 # Requierments
-You need an ec-Flex board and a glucose biosensor from Zeammer & Peacock. A tutorial to build the smartwatch is available [here](https://dvic.devinci.fr/tutorial/smartwatch). You have to replace the Arduino Uno by a WeMos D1 mini. You need bleak and sqlite3 libraries to run the programs.  
+You need an ec-Flex board, an ec-Flex battery and a glucose biosensor from [Zeammer&Peacock](https://www.zimmerpeacocktech.com/products/). A tutorial to build the smartwatch is available [here](https://dvic.devinci.fr/tutorial/smartwatch). You have to replace the Arduino Uno by a WeMos D1 mini. You need bleak and sqlite3 libraries to run the programs.  
+
