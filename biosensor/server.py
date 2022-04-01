@@ -41,7 +41,7 @@ def run_tcp_server(buffer: EcFlexValues):   #
      global data
      data = buffer
      print("Starting server")
-     app.run(host = '0.0.0.0', port = 1234)   # Accept all IP addresses 
+     app.run(host = '0.0.0.0', port = 1235)   # Accept all IP addresses 
 
 
 

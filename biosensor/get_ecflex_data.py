@@ -65,7 +65,7 @@ def read_callback(sender, read_value):                   # This function is call
     cg = i/N2                                            # Glucose concentration
 # See ec-Flex quick-start document for more information.
 
-    print("ID: ", id_value, "| Timer: ", timer_value, "s ", "| Temperature: ", temperature_value, "°F ", "| Glucose concentration: ", cg, "µMol")
+    print("ID: ", id_value, "| Timer: ", timer_value, "s ", "| Temperature: ", temperature_value, "°F ", "| Glucose concentration: ", round(cg, 3), "mMol")
     update_value(id=id_value, timer=timer_value, temperature=temperature_value, glucose_concentration=cg)
     conn.execute("insert into ecFlex_data values (?, ?, ?, ?)", (id_value, timer_value, temperature_value, cg))
     conn.commit()
