@@ -129,7 +129,6 @@ dmypy.json
 .pyre/
 
 # VScode stuff
-.platformio.ini
 .vscode/
 
 # Personal draft
