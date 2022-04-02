@@ -56,6 +56,7 @@ def update_value(**kwargs):
 
 ##### Data processing #####
 def read_callback(sender, read_value):                   # This function is called on notification
+#   print("read_value: "read_value)
     read_value = struct.unpack('<4H', read_value)        # Convert bytesarray readed into bytes (for each line). '<' shows reading direction.
     id_value = read_value[0]                             # ID value of the byte sent
     timer_value = round(read_value[1] / 10**3, 1)        # Timer value in milliseconds

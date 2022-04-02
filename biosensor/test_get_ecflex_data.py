@@ -1,14 +1,17 @@
-#####################################################################
-###     A python script to test the type of the processed data    ###
-#####################################################################
+#################################################################
+###     A python script to test the type of returned data     ###
+###                from the ead_callback function             ###
+#################################################################
 
 
 import get_ecflex_data
 import unittest
 
-class TestProgram(unittest.TestCase):        # Individual unit of testing.
-     def testbytereceive(self):
-          data_to_test = get_ecflex_data.read_callback(sender, read_value)
+value_to_test = b'\x13\x00\x984\x9e\x02\x98\x01'
+
+class TestProgram(unittest.TestCase):         # Individual unit of testing.
+     def test_read_callback(self):
+          data_to_test = get_ecflex_data.read_callback(None, value_to_test)
           id_test = data_to_test[0]
           timer_test = data_to_test[1]
           temperature_test = data_to_test[2]
