@@ -6,9 +6,6 @@ import sqlite3
 import os
 import get_ecflex_data
 
-# def connect_to_db():
-#     conn = sqlite3.connect('database.db')     # Establish a connection to the database and create a connection object. database.db is the database file.
-#     return conn
 
 def check_db(database):
     os.path.exists(database)       # Check if the file already exists in the system.

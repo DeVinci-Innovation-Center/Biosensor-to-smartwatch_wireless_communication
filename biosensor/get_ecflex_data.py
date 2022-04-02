@@ -38,7 +38,7 @@ handle99 = "00002e02-0000-1000-8000-00805f9b34fb"         # Handle 99 | N2 | Sca
 #### Database setup ####
 with open(SCHEMA_FILE, 'r') as rf:
     schema = rf.read()                           # Read the schema from the file.
-    print(schema, SCHEMA_FILE)
+#    print(schema, SCHEMA_FILE)
 conn = sqlite3.connect(DB_FILE)
 print('Connection to database established') 
 conn.executescript(schema)                       # Execute the SQL query to create the table.
@@ -69,6 +69,7 @@ def read_callback(sender, read_value):                   # This function is call
     update_value(id=id_value, timer=timer_value, temperature=temperature_value, glucose_concentration=cg)
     conn.execute("insert into ecFlex_data values (?, ?, ?, ?)", (id_value, timer_value, temperature_value, cg))
     conn.commit()
+    return id_value, timer_value, temperature_value, cg
 
 
 ##### Bluetooth scanner #####
@@ -86,10 +87,10 @@ async def main(mac_addr: str):
 
 ##### Constants acquisition #####
         print("N0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle24))))
-        print("D0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle21))))
-        print("X0: ", struct.unpack('i', bytes(await client.read_gatt_char(handle27))))
+        print("D0*100: ", struct.unpack('i', bytes(await client.read_gatt_char(handle21))))
+        print("X0*100: ", struct.unpack('i', bytes(await client.read_gatt_char(handle27))))
         print("N1: ", struct.unpack('i', bytes(await client.read_gatt_char(handle96))))
-        print("D1: ", struct.unpack('i', bytes(await client.read_gatt_char(handle30))))        
+        print("D1*100: ", struct.unpack('i', bytes(await client.read_gatt_char(handle30))))        
         print("N2: ", struct.unpack('i', bytes(await client.read_gatt_char(handle99))))
 
         N0 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle24)))[0])      # ADC reference voltage
@@ -98,11 +99,6 @@ async def main(mac_addr: str):
         N1 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle96)))[0])      # Scale factor for current
         D1 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle30)))[0])      # Current-to-voltage amplification        
         N2 = int(struct.unpack('i', bytes(await client.read_gatt_char(handle99)))[0])      # Scale-factor for non-offset linear conversion
-
-        # print("D0*100: ", D0)
-        # print("X0*100: ", X0)
-        # print("D1*100: ", D1)
-        # print("N2: ", N2)
 
         await asyncio.sleep(1000.0)           # Suspend the task for 1 second
         await client.stop_notify(handle17)    # Stop wainting for a notification on the handle / characteristic 17.

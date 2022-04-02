@@ -5,17 +5,18 @@
 
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
+#include <string.h>
 
 #ifndef STASSID
-#define STASSID "PoleDeVinci_DVIC"       // Enter your network SSID
-#define STAPSK  "8PfURsp!dvic"           // Enter your network password
+#define STASSID "PoleDeVinci_DVIC"       // Enter your network SSID.
+#define STAPSK  "8PfURsp!dvic"           // Enter your network password.
 #endif
 
-const char* ssid     = STASSID;          // Replace STASSID by "your_WiFi_network_name"
-const char* password = STAPSK;           // Replace STAPSK by "your_WiFi_network_password"
+const char* ssid     = STASSID;          // Replace STASSID by "your_WiFi_network_name".
+const char* password = STAPSK;           // Replace STAPSK by "your_WiFi_network_password".
 
-String host = "172.21.72.179";           // Enter your domain
-const uint16_t port = 1235;
+String host = "172.21.72.179";           // Enter your domain.
+const uint16_t port = 1235;              // Choose the port to use.
 
 WiFiClient client;
 
@@ -65,14 +66,12 @@ void loop() {
  
     if (httpCode > 0) {                    // The server has new payload available
  
-      String payload = http.getString();   // Get the request response payload
-      const char* payloadCStr = payload.c_str();
-//      Serial.print("payload: ");
-//      Serial.println(payload);             // Print the response payload
-      
-      char* pch = strtok((char*)payloadCStr, ";");
+      String payload = http.getString();              // Get the request response payload
+      const char* payloadCStr = payload.c_str();      // Convert the string into a char. The char contains the temperature and the glucose concentration, separated by a semicolon
+      char* pch = strtok((char*)payloadCStr, ";");    // Recover
+      char* copy = strdup(pch);
       Serial.print("Temperature: ");
-      Serial.println(pch);
+      Serial.println(copy);
       pch = strtok(NULL, ";");
       Serial.print("Glucose concentration: ");
       Serial.println(pch);
