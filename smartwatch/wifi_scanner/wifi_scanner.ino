@@ -6,22 +6,12 @@
 WiFiClient client;
 
 void setup() {
-
-  // initialize serial and wait for the port to open:
-
   Serial.begin(115200);
-
- 
-//  WiFi.mode(WiFi_STA);       // Set the ESP8266 in the Station mode. This mode allow the ESP to connect to a WiFi network.
-//  WiFi.disconnect();           // Disconnection from an eventual network.
-//  delay(100);
-
-//  Serial.println("Setup done");
 }
 
 void loop() {
   Serial.println("Scan start");
-  int n = WiFi.scanNetworks();     // WiFi.scanNetworks return the number of networks found
+  int n = WiFi.scanNetworks();            // WiFi.scanNetworks return the number of networks found
   Serial.println("Scan done");
   if (n==0) {
     Serial.println("No networks found");
@@ -46,5 +36,5 @@ void loop() {
   }
   Serial.println("");
 
-  delay(5000);       // Wait a bit befor scanning again
+  delay(5000);                   // Wait a bit befor scanning again
 }

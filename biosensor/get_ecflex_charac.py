@@ -2,6 +2,7 @@
 ###      A python script to print services and characteristics     ###
 ######################################################################
 
+
 import asyncio
 import platform
 import sys

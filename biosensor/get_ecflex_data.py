@@ -107,6 +107,6 @@ async def main(mac_addr: str):
 #### main ####
 if __name__ == "__main__":
     print("Start bluetooth scanning")
-    Thread(target=run_tcp_server, args=(MULTIPROCES_VALUES,)).start()      # Allow to have shared memory
-    asyncio.run(main(mac_addr))                # Execute the coroutine and return the result
+    Thread(target=run_tcp_server, args=(MULTIPROCES_VALUES,)).start()   # Allow to have shared memory
+    asyncio.run(main(mac_addr))                                         # Execute the coroutine and return the result
 

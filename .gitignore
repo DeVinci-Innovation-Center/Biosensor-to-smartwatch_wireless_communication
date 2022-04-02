@@ -132,5 +132,5 @@ dmypy.json
 .vscode/
 
 # Personal draft
-.draft_client.ino/
+.draft_client.ino
 

@@ -2,6 +2,7 @@
 ###   A python script to save the data into a local database   ###
 ##################################################################
 
+
 import sqlite3
 import os
 import get_ecflex_data
@@ -27,10 +28,8 @@ def add_read_value_to_db(db_file, schema_file):
 
 
 def main():
-#    c = connect_to_db().cursor()       # Create a cursor to the Database.
     db_file = '/home/vivien/Documents/GitHub/Biosensor-to-smartwatch_wireless_communication/database.db'
     schema_file = '/home/vivien/Documents/GitHub/Biosensor-to-smartwatch_wireless_communication/schema.sql'
-#    connect_to_db()
     add_read_value_to_db(db_file, schema_file)
 
 if __name__ == "__main__":
