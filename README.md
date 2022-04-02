@@ -21,7 +21,7 @@ Run ```sh main.sh``` in your terminal.
 # Requierments
 
 ### Hardware
-You need an ec-Flex board, an ec-Flex battery and a glucose biosensor from [Zeammer&Peacock](https://www.zimmerpeacocktech.com/products/). A tutorial to build the smartwatch is available [here](https://dvic.devinci.fr/tutorial/smartwatch). You have to replace the Arduino Uno by a WeMos D1 mini. 
+You need an ec-Flex board, an ec-Flex battery and a glucose biosensor from [Zimmer&Peacock](https://www.zimmerpeacocktech.com/products/). A tutorial to build the smartwatch is available [here](https://dvic.devinci.fr/tutorial/smartwatch). You have to replace the Arduino Uno by a WeMos D1 mini. 
 
 ### Software
 You need bleak, asyncio, sqlite3, multiprocessing, struct, os, socket, time Python modules to run the programs. You also need the PyBluez Python extension module.
