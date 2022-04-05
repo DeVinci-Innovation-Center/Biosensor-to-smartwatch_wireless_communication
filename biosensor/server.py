@@ -6,10 +6,10 @@
 from commons import *
 from flask import Flask
 
-app = Flask(__name__)        # Set the app/ the server
+app = Flask(__name__)                         # Set the app / the server.
 
 data = b''
-@app.route("/get_data")     # Define what happened dès que la montre envoie get data | @app.route est un decorateur de la fonction send_data
+@app.route("/get_data")                       # Define what happened when the WeMos get data.
 def send_data():
      return data.to_string()
 
@@ -17,7 +17,4 @@ def run_tcp_server(buffer: EcFlexValues):
      global data
      data = buffer
      print("Starting server")
-     app.run(host = '0.0.0.0', port = 1235)   # Accept all IP addresses 
-
-
-
+     app.run(host = '0.0.0.0', port = 1235)   # Accept all IP addresses.
