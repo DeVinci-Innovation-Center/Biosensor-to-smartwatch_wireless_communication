@@ -8,15 +8,15 @@
 #include <string.h>
 
 #ifndef STASSID
-#define STASSID "PoleDeVinci_DVIC"       // Enter your network SSID.
-#define STAPSK  "8PfURsp!dvic"           // Enter your network password.
+#define STASSID "SSID"                      // Enter your network SSID.
+#define STAPSK  "PASSWORD"                  // Enter your network password.
 #endif
 
-const char* ssid     = STASSID;          // Replace STASSID by "your_WiFi_network_name".
-const char* password = STAPSK;           // Replace STAPSK by "your_WiFi_network_password".
+const char* ssid     = STASSID;          
+const char* password = STAPSK;           
 
-String host = "172.21.72.179";           // Enter your domain.
-const uint16_t port = 1235;              // Choose the port to use.
+String host = "172.21.72.179";             // Enter your domain.
+const uint16_t port = 1235;                // Choose the port to use.
 
 WiFiClient client;
 
@@ -33,7 +33,7 @@ void setup() {
 
   // Set the ESP8266 to be a WiFi-client
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);              // Start the communication
+  WiFi.begin(ssid, password);                // Start the communication
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -58,13 +58,13 @@ void setup() {
 
 void loop() {
   
-  if (WiFi.status() == WL_CONNECTED) {     // Check WiFi connection status
+  if (WiFi.status() == WL_CONNECTED) {                // Check WiFi connection status
  
-    HTTPClient http;                       // Declare an object of class HTTPClient
+    HTTPClient http;                                  // Declare an object of class HTTPClient
     http.begin(client, "http://" + host +":" + port + "/get_data");        //Specify the request destination
-    int httpCode = http.GET();             // Request payload from the server
+    int httpCode = http.GET();                        // Request payload from the server
  
-    if (httpCode > 0) {                    // The server has new payload available
+    if (httpCode > 0) {                               // The server has new payload available
  
       String payload = http.getString();              // Get the request response payload
       const char* payloadCStr = payload.c_str();      // Convert the string into a char. The char contains the temperature and the glucose concentration, separated by a semicolon
