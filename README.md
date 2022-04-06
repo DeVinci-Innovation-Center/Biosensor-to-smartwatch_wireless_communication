@@ -12,18 +12,19 @@ This project presents a wireless communication solution between an ec-Flex from 
 * Run the code.
 * Recover the addresses of handles 17, 21, 24, 27, 30, 96, and 99 in the vendor service. 
 
-**3. In the [get_ecflex_data.py](https://github.com/DeVinci-Innovation-Center/Smartwatch/blob/main/get_ecflex_data.py) script:**
+**3. In the [server.py](https://github.com/DeVinci-Innovation-Center/Biosensor-to-smartwatch_wireless_communication/blob/main/biosensor/server.py) script:**
+* Define the port to use.
+* 
+**4. In the [get_ecflex_data.py](https://github.com/DeVinci-Innovation-Center/Smartwatch/blob/main/get_ecflex_data.py) script:**
 * Enter the handles addresses.
 * Fill the access path of the database.db and schema.sql files.
 * Run the code.
-
-**4. In the [server.py](https://github.com/DeVinci-Innovation-Center/Biosensor-to-smartwatch_wireless_communication/blob/main/biosensor/server.py) script:**
-* Define the port to use.
 
 **5. In the [wifi_client.ino](https://github.com/DeVinci-Innovation-Center/Biosensor-to-smartwatch_wireless_communication/blob/main/smartwatch/wifi_client/wifi_client.ino) script:**
 * Define your network SSID and password.
 * Enter your domain.
 * Define the port to use.
+* Run the code.
 
 # Functional diagram
 
