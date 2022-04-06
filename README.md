@@ -17,6 +17,14 @@ This project presents a wireless communication solution between an ec-Flex from 
 * Fill the access path of the database.db and schema.sql files.
 * Run the code.
 
+**4. In the [server.py](https://github.com/DeVinci-Innovation-Center/Biosensor-to-smartwatch_wireless_communication/blob/main/biosensor/server.py) script:**
+* Define the port to use.
+
+**5. In the [wifi_client.ino](https://github.com/DeVinci-Innovation-Center/Biosensor-to-smartwatch_wireless_communication/blob/main/smartwatch/wifi_client/wifi_client.ino) script:**
+* Define your network SSID and password.
+* Enter your domain.
+* Define the port to use.
+
 # Functional diagram
 
 <p align="center">
