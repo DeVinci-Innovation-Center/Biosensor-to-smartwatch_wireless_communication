@@ -14,7 +14,7 @@ This project presents a wireless communication solution between an ec-Flex from 
 
 **3. In the [server.py](https://github.com/DeVinci-Innovation-Center/Biosensor-to-smartwatch_wireless_communication/blob/main/biosensor/server.py) script:**
 * Define the port to use.
-* 
+
 **4. In the [get_ecflex_data.py](https://github.com/DeVinci-Innovation-Center/Smartwatch/blob/main/get_ecflex_data.py) script:**
 * Enter the handles addresses.
 * Fill the access path of the database.db and schema.sql files.
