@@ -5,6 +5,7 @@
 #include <ESP8266WiFi.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
+#include "wifi-network.h"
 
 #define TFT_DC 4 // SDA
 #define TFT_CS 5 // SCL
@@ -15,8 +16,8 @@ Adafruit_GC9A01A tft(TFT_CS, TFT_DC);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 // Network credentials
-const char *ssid     = "REPLACE_WITH_YOUR_SSID";
-const char *password = "REPLACE_WITH_YOUR_PASSWORD";
+const char *ssid     = boxssid;        // REPLACE_WITH_YOUR_SSID
+const char *password = boxpassword;         // REPLACE_WITH_YOUR_PASSWORD
 
 //Define an NTP client to get date and time
 WiFiUDP ntpUDP;
