@@ -205,15 +205,15 @@ void setup()
   tft.setTextWrap(false);
   tft.print(" mM");
 
-  //  tft.drawRect(25, 49, 190, 143, DKTEAL);     // Rectangle intérieur centré
-  //  tft.drawRect(48, 24, 144, 192, DKGREY);     // Rectangle extérieur centré
-  //  tft.drawRect(24, 48, 192, 144, DKGREY);     // Rectangle extérieur centré
-  //  tft.drawRect(35, 35, 170, 170, DKMAGENTA);  // Grand carré centré, marge 0 pixel
-  //  tft.drawRect(40, 40, 160, 160, DKGREY);     // Carré centré avec marge 10 pixels
-  //  tft.drawLine(48, 24, 192, 216, LTBLUE);    // Diagonale du rectangle extérieur
-  //  tft.drawLine(192, 24, 48, 216, LTBLUE);    // Diagonale du rectangle extérieur
-  //  tft.drawLine(0, 0, 240, 240, DKMAGENTA);     // Diagonale du grand carré
-  //  tft.drawLine(0, 240, 240, 0, DKMAGENTA);     // Diagonale du grand carré
+  //  tft.drawRect(25, 49, 190, 143, DKTEAL);     // Centered inner rectangle
+  //  tft.drawRect(48, 24, 144, 192, DKGREY);     // Centered outer rectangle
+  //  tft.drawRect(24, 48, 192, 144, DKGREY);     // Centered outer rectangle
+  //  tft.drawRect(35, 35, 170, 170, DKMAGENTA);  // Large centered square, 0 pixel margin
+  //  tft.drawRect(40, 40, 160, 160, DKGREY);     // Square centered with 10px margin
+  //  tft.drawLine(48, 24, 192, 216, LTBLUE);    // Diagonal 1 of outer rectangle
+  //  tft.drawLine(192, 24, 48, 216, LTBLUE);    // Diagonal 2 of outer rectangle
+  //  tft.drawLine(0, 0, 240, 240, DKMAGENTA);     // Diagonal 1 of the large square
+  //  tft.drawLine(0, 240, 240, 0, DKMAGENTA);     // Diagonal 2 of the large square
 }
 
 void loop()

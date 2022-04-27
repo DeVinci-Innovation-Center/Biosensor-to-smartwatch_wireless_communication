@@ -16,8 +16,8 @@ Adafruit_GC9A01A tft(TFT_CS, TFT_DC);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 // Network credentials
-const char *ssid     = boxssid;        // REPLACE_WITH_YOUR_SSID
-const char *password = boxpassword;         // REPLACE_WITH_YOUR_PASSWORD
+const char *ssid     = myssid;        // Enter your network SSID in wifi-network.h
+const char *password = mypassword;    // Enter your network password in wifi-network.h
 
 //Define an NTP client to get date and time
 WiFiUDP ntpUDP;

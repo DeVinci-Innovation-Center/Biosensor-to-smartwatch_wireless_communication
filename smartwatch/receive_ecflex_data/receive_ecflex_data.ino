@@ -6,10 +6,11 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <string.h>
+#include "wifi-network.h"
 
 #ifndef STASSID
-#define STASSID "SSID"                      // Enter your network SSID.
-#define STAPSK  "PASSWORD"                  // Enter your network password.
+#define STASSID "SSID"                      // Enter your network SSID in wifi-network.h
+#define STAPSK  "PASSWORD"                  // Enter your network password in wifi-network.h
 #endif
 
 const char* ssid     = STASSID;          

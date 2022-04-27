@@ -70,7 +70,7 @@ void loop(void) {
   for(uint8_t rotation=0; rotation<4; rotation++) {
     tft.setRotation(rotation);
     testText();
-    delay(1000);
+    delay(100);
   }
 }
 
